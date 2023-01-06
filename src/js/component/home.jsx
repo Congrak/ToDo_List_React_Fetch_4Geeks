@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import { getAll, updateAll } from '../component/services/api'
 
 //include images into your bundle
 import rigoImage from "../../img/rigo-baby.jpg";
@@ -8,10 +8,20 @@ import rigoImage from "../../img/rigo-baby.jpg";
 const Home = () => {
 	const [list, setList] = useState([]);
 
+	useEffect(async () => {
+		const api = await getAll()
+		setList(api)
+	}
+		, [])
+
+	useEffect(() => {
+		updateAll(list);
+	}, [list]);
+
 	let type = (e) => {
 		if (e.key == 'Enter' && e.target.value != "") {
 			let myArray = [...list]
-			myArray.push(e.target.value)
+			myArray.push({ label: e.target.value, done: true })
 			setList(myArray)
 			e.target.value = ''
 		}
@@ -26,9 +36,9 @@ const Home = () => {
 				<ul className="list">{list.map((task, index) => {
 					console.log(task)
 					return (
-						<div >
-							<li className='task' key={index}>
-								<p>{task}</p>
+						<div key={index} >
+							<li className='task' >
+								<p>{task.label}</p>
 								<div className="button" onClick={() => {
 									let myArray = [...list]
 									myArray.splice(index, 1)
@@ -45,6 +55,11 @@ const Home = () => {
 					)
 				})}
 				</ul>
+				<div className="clearBtn">
+					<button className="clear" onClick={ () => {
+						setList([])
+					}}>Clear</button>
+				</div>
 				<div className="footer">
 					<p>{list.length} Item left</p>
 				</div>
